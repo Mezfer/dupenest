@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DupeNest</title>
+<meta name="description" content="Search a pricey furniture or decor piece and find look-alike alternatives for less. Compare prices and savings in seconds.">
+<style>
+:root{--bg:#faf7f2;--card:#fff;--ink:#2b2622;--mut:#7a6f66;--acc:#b5651d;--acc2:#8f4e14;--ok:#2e7d4f;--line:#e8e0d5;--soft:#efe8dd;--img:#f1ebe2;--warnbg:#fff3cd;--warnfg:#7a5b00;--danger:#b3261e;--heart:#c0392b;--onacc:#fff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1b1815;--card:#26211d;--ink:#f1ebe3;--mut:#a89d92;--acc:#e0954a;--acc2:#c97f35;--ok:#5fc08a;--line:#3a332d;--soft:#332c26;--img:#2f2923;--warnbg:#4a3d12;--warnfg:#f3d98a;--danger:#e0574d;--heart:#ef7a6e;--onacc:#1b1815;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1b1815;--card:#26211d;--ink:#f1ebe3;--mut:#a89d92;--acc:#e0954a;--acc2:#c97f35;--ok:#5fc08a;--line:#3a332d;--soft:#332c26;--img:#2f2923;--warnbg:#4a3d12;--warnfg:#f3d98a;--danger:#e0574d;--heart:#ef7a6e;--onacc:#1b1815;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+.wrap{max-width:1050px;margin:auto;padding:0 16px}
+nav{display:flex;align-items:center;justify-content:space-between;height:58px;gap:12px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:20px;color:var(--acc);text-decoration:none}
+nav .links a{margin-left:14px;color:var(--ink);text-decoration:none;font-size:14px}
+nav .links a:hover{color:var(--acc)}
+.hero{text-align:center;padding:42px 0 18px}
+.hero h1{font-size:clamp(26px,5vw,40px);margin:0 0 8px}
+.hero p{color:var(--mut);margin:0 0 20px}
+.sbox{display:flex;gap:8px;max-width:640px;margin:auto}
+input,select,textarea,button{font:inherit}
+input,select,textarea{padding:11px 13px;border:1px solid var(--line);border-radius:10px;background:#fff;width:100%}
+button,.btn{background:var(--acc);color:var(--onacc);border:0;border-radius:10px;padding:11px 18px;cursor:pointer;text-decoration:none;display:inline-block;font-weight:600}
+button:hover,.btn:hover{background:var(--acc2)}
+button.sec{background:var(--soft);color:var(--ink)}
+button.danger{background:var(--danger);color:#fff}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:18px 0}
+.filters label{font-size:12px;color:var(--mut);display:block;margin-bottom:3px}
+.cats{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0}
+.chip{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:6px 13px;font-size:13px;cursor:pointer}
+.chip.on{background:var(--acc);color:var(--onacc);border-color:var(--acc)}
+.orig{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:22px 0 10px;align-items:center}
+.orig img,.card img{width:100%;display:block;border-radius:12px;background:var(--img)}
+.orig .im{width:150px;flex:none}
+.tag{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--mut)}
+.price{font-size:22px;font-weight:800}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;margin-bottom:30px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;position:relative;display:flex;flex-direction:column;gap:6px}
+.card img{aspect-ratio:4/3;object-fit:cover}
+.save{position:absolute;top:18px;right:18px;background:var(--card);color:var(--heart);border-radius:50%;width:36px;height:36px;padding:0;font-size:18px;box-shadow:0 1px 4px #0003}
+.badge{position:absolute;top:18px;left:18px;background:var(--ok);color:var(--bg);font-size:11px;padding:3px 9px;border-radius:12px;font-weight:700}
+.sav{color:var(--ok);font-weight:800;font-size:19px}
+.mut{color:var(--mut);font-size:13px}
+.sample{background:var(--warnbg);color:var(--warnfg);font-size:12px;padding:6px 10px;border-radius:8px;margin:10px 0}
+.disc{font-size:12px;color:var(--mut);margin:6px 0 14px}
+.ad{min-height:0}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin:8px 0}
+footer{border-top:1px solid var(--line);margin-top:40px;padding:22px 0;color:var(--mut);font-size:13px;text-align:center}
+footer a{color:var(--mut);margin:0 8px}
+h2{margin-top:26px}
+@media(max-width:560px){.orig{flex-direction:column;align-items:flex-start}.orig .im{width:100%}.sbox{flex-direction:column}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><nav>
+<a class="logo" href="#/">🪑 DupeNest</a>
+<div class="links"><a href="#/">Home</a><a href="#/how">How it works</a><a href="#/favorites">♥ Favorites (<span id="favN">0</span>)</a></div>
+</nav></div></header>
+<main class="wrap" id="app"></main>
+<footer><div class="wrap">
+<div><a href="#/how">How it works</a><a href="#/privacy">Privacy</a><a href="#/disclosure">Affiliate disclosure</a></div>
+<p>We may earn a commission when you buy through our links, at no extra cost to you. Prices change; always check the retailer's page.</p>
+<p>As an Amazon Associate I earn from qualifying purchases.</p><p>© DupeNest</p>
+</div></footer>
+
+<script>
+/* ---------- helpers ---------- */
+function twice(b,fn){if(b.dataset.arm){fn();return}b.dataset.arm=1;const t=b.textContent;b.textContent='Click again to confirm';setTimeout(()=>{delete b.dataset.arm;b.textContent=t},3000)}
+const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CATS=['sofas','chairs','tables','lighting','rugs','beds','storage','decor'];
+const STYLES=['modern','mid-century','scandinavian','boho'];
+const EMO={sofas:'🛋️',chairs:'💺',tables:'🪵',lighting:'💡',rugs:'🟫',beds:'🛏️',storage:'🗄️',decor:'🖼️'};
+function ph(cat,label){
+  const e=EMO[cat]||'🪑';
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><rect width="400" height="300" fill="#efe6d8"/><text x="200" y="165" font-size="90" text-anchor="middle">${e}</text></svg>`;
+  return 'data:image/svg+xml;utf8,'+encodeURIComponent(svg);
+}
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+/* ---------- sample data (clearly marked) ---------- */
+const SAMPLE=[{"id": "eames", "name": "Eames Lounge Chair and Ottoman", "brand": "Herman Miller · Design Within Reach", "price": 7895, "category": "chairs", "style": "mid-century", "image": "", "dupes": [{"name": "Hadley Recliner and Ottoman", "retailer": "Apt2B", "price": 1038, "image": "", "url": "https://www.apt2b.com/products/hadley-recliner-and-ottoman", "aff": ""}, {"name": "Paulo Bent Ply Leather Chair", "retailer": "West Elm", "price": 1499, "image": "", "url": "https://www.westelm.com/products/paulo-bent-ply-leather-chair-h2609/", "aff": ""}, {"name": "Vesper Wood & Leather Lounge Chair", "retailer": "Burrow", "price": 1497, "image": "", "url": "https://burrow.com/living-room/seating/accent-chairs/vesper-wood-and-leather-lounge-chair", "aff": ""}, {"name": "Meklen Lounge Set", "retailer": "Article", "price": 1599, "image": "", "url": "https://www.article.com/product/22146/meklen-oxford-black-lounge-set", "aff": ""}]}, {"id": "rhcloud", "name": "Cloud Chair", "brand": "Restoration Hardware", "price": 3895, "category": "chairs", "style": "modern", "image": "", "dupes": [{"name": "Ann Upholstered Armchair", "retailer": "Birch Lane", "price": 630, "image": "", "url": "", "aff": ""}, {"name": "Westview Extra-Deep Down-Filled Accent Chair", "retailer": "Amazon (Stone & Beam)", "price": 650, "image": "", "url": "", "aff": ""}, {"name": "Modern Living Room Accent Chair", "retailer": "Amazon (Rivet)", "price": 715, "image": "", "url": "", "aff": ""}, {"name": "Emilio Armchair", "retailer": "Wayfair", "price": 1175, "image": "", "url": "", "aff": ""}, {"name": "Willow II Slipcovered Chair-and-a-Half", "retailer": "Crate & Barrel", "price": 1349, "image": "", "url": "", "aff": ""}]}, {"id": "noguchi", "name": "Noguchi Coffee Table", "brand": "Herman Miller", "price": 2595, "category": "tables", "style": "mid-century", "image": "", "dupes": [{"name": "Tovi Smoked Oak Coffee Table", "retailer": "Article", "price": 370, "image": "", "url": "https://www.article.com/pla/19551/tovi-smoked-oak-coffee-table", "aff": ""}, {"name": "Triangle Glass Coffee Table", "retailer": "Walmart (Raffle Pinker)", "price": 400, "image": "", "url": "https://www.walmart.com/ip/Raffle-Pinker-Triangle-Glass-Coffee-Table-0-8-Thick-Tempered-Glass-Coffee-Table-with-Solid-Dark-Walnut-Base-for-Living-Room/1771480945", "aff": ""}, {"name": "Drossett Abstract Coffee Table", "retailer": "Wayfair (Joss & Main)", "price": 450, "image": "", "url": "https://www.wayfair.com/furniture/pdp/joss-main-drossett-abstract-coffee-table-w003344398.html", "aff": ""}]}];
+let DB=load('dn_db2',null)||SAMPLE;
+let FAV=load('dn_fav',[]);
+let REQ=load('dn_req',[]);
+const persist=()=>{save('dn_db2',DB);save('dn_fav',FAV);save('dn_req',REQ);$('#favN').textContent=FAV.length};
+
+/* ---------- search ---------- */
+function lev(a,b){const m=[];for(let i=0;i<=a.length;i++){m[i]=[i]}for(let j=0;j<=b.length;j++)m[0][j]=j;
+ for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return m[a.length][b.length]}
+function score(p,q){
+  const toks=q.toLowerCase().split(/\s+/).filter(Boolean);if(!toks.length)return 1;
+  const hay=(p.name+' '+p.brand+' '+p.category+' '+p.style).toLowerCase();
+  const words=hay.split(/[^a-z0-9]+/);
+  let s=0;
+  for(const t of toks){
+    if(hay.includes(t))s+=2;
+    else if(t.length>=4&&words.some(w=>w.length>=4&&lev(w,t)<=1))s+=1;
+  }
+  return s;
+}
+const pct=(o,d)=>Math.round((o-d)/o*100);
+const money=n=>'$'+Number(n).toLocaleString('en-US');
+function link(d){return d.aff||d.url||''}
+
+/* ---------- state ---------- */
+let S={q:'',cat:'',style:'',max:'',minsav:'',sel:null};
+
+/* ---------- views ---------- */
+function setSEO(t){document.title=t?t+' – DupeNest':'DupeNest – Find Cheaper Alternatives to Designer Furniture'}
+function dupeCard(p,d,best){
+  const id=p.id+'|'+d.name;
+  const faved=FAV.includes(id);
+  const sv=pct(p.price,d.price), l=link(d);
+  return `<div class="card">
+   ${best?'<span class="badge">Best match</span>':''}
+   <button class="save" data-fav="${esc(id)}" aria-label="Save">${faved?'♥':'♡'}</button>
+   <img loading="lazy" src="${esc(d.image||ph(p.category))}" alt="${esc(d.name)}">
+   <div class="mut">${esc(d.retailer)}</div>
+   <strong>${esc(d.name)}</strong>
+   <div><span class="price">${money(d.price)}</span> <span class="mut">vs ${money(p.price)}</span></div>
+   <div class="sav">Save ${sv}% (${money(p.price-d.price)})</div>
+   ${l?`<a class="btn" href="${esc(l)}" target="_blank" rel="sponsored noopener">Shop this dupe</a>`:`<button class="sec" disabled title="Add a link in #/admin">No link yet</button>`}
+  </div>`;
+}
+function renderHome(){
+  setSEO('');
+  let list=DB.map(p=>({p,s:score(p,S.q)})).filter(x=>x.s>0);
+  if(S.cat)list=list.filter(x=>x.p.category===S.cat);
+  if(S.style)list=list.filter(x=>x.p.style===S.style);
+  list.sort((a,b)=>b.s-a.s);
+  const hasSample=DB.some(p=>p.sample);
+  let h=`<section class="hero"><h1>Find the look for less</h1>
+   <p>Search an expensive piece (e.g. Eames lounge chair) and see cheaper alternatives.</p>
+   <form class="sbox" id="sf"><input id="q" placeholder="Search an expensive piece… e.g. lounge chair" value="${esc(S.q)}" aria-label="Search"><button>Search</button></form></section>
+   <div class="cats">${['',...CATS].map(c=>`<span class="chip ${S.cat===c?'on':''}" data-cat="${c}">${c||'All'}</span>`).join('')}</div>
+   <div class="filters">
+    <div><label>Style</label><select id="fs"><option value="">Any</option>${STYLES.map(s=>`<option ${S.style===s?'selected':''}>${s}</option>`).join('')}</select></div>
+    <div><label>Max dupe price ($)</label><input id="fm" type="number" min="0" value="${esc(S.max)}" placeholder="e.g. 1000"></div>
+    <div><label>Min savings (%)</label><input id="fv" type="number" min="0" max="99" value="${esc(S.minsav)}" placeholder="e.g. 50"></div>
+   </div>
+   ${hasSample?'<div class="sample">⚠️ Sample data: products, prices and brands below are placeholders. Replace them in the admin area (#/admin) with real products.</div>':''}
+   <div class="disc">We may earn a commission when you buy through our links.</div>
+   <div class="ad" id="adslot"><!-- Paste your Google AdSense snippet here --></div>`;
+  let any=false;
+  for(const {p} of list){
+    let ds=p.dupes.filter(d=>(!S.max||d.price<=+S.max)&&(!S.minsav||pct(p.price,d.price)>=+S.minsav));
+    if(!ds.length)continue;
+    any=true;
+    const bestPrice=Math.min(...ds.map(d=>d.price));
+    h+=`<div class="orig"><div class="im"><img src="${esc(p.image||ph(p.category))}" alt="${esc(p.name)}"></div>
+      <div><div class="tag">Original · ${esc(p.category)} · ${esc(p.style)}</div><h2 style="margin:4px 0">${esc(p.name)}</h2>
+      <div class="mut">${esc(p.brand)}</div><div class="price">${money(p.price)}</div></div></div>
+      <div class="grid">${ds.map(d=>dupeCard(p,d,d.price===bestPrice&&ds.length>1)).join('')}</div>`;
+  }
+  if(!any){
+    h+=`<div class="panel"><h2 style="margin-top:0">No dupe found yet</h2><p>Tell us what you're looking for and we'll try to add it.</p>
+     <form id="rf"><div class="row"><input name="item" placeholder="Product name or link" required><input name="email" type="email" placeholder="Email (optional)"></div><button>Request a dupe</button></form></div>`;
+  }
+  $('#app').innerHTML=h;
+  $('#sf').onsubmit=e=>{e.preventDefault();S.q=$('#q').value.trim();renderHome()};
+  $('#fs').onchange=e=>{S.style=e.target.value;renderHome()};
+  $('#fm').onchange=e=>{S.max=e.target.value;renderHome()};
+  $('#fv').onchange=e=>{S.minsav=e.target.value;renderHome()};
+  const rf=$('#rf');if(rf)rf.onsubmit=e=>{e.preventDefault();const f=new FormData(rf);REQ.push({item:f.get('item'),email:f.get('email'),date:new Date().toISOString()});persist();rf.innerHTML='<p>✅ Thanks! Your request was saved.</p>'};
+}
+function renderFav(){
+  setSEO('Favorites');
+  let h='<h2>♥ My favorites</h2>';
+  const items=[];
+  for(const id of FAV){const [pid,dn]=id.split('|');const p=DB.find(x=>x.id===pid);const d=p&&p.dupes.find(x=>x.name===dn);if(d)items.push([p,d])}
+  h+=items.length?`<div class="grid">${items.map(([p,d])=>dupeCard(p,d,false)).join('')}</div>`:'<p class="mut">Nothing saved yet. Tap the heart on any dupe.</p>';
+  $('#app').innerHTML=h;
+}
+function renderPage(t,body){setSEO(t);$('#app').innerHTML=`<h2>${t}</h2><div class="panel">${body}</div>`}
+function renderAdmin(){
+  setSEO('Admin');
+  let h=`<h2>Admin</h2><div class="sample">This admin area is client-side only and NOT secure. Data is stored in this browser (localStorage). Use Export to back it up.</div>
+  <div class="panel"><strong>Add original product</strong><form id="addp"><div class="row">
+   <input name="name" placeholder="Name" required><input name="brand" placeholder="Brand" required>
+   <input name="price" type="number" min="1" placeholder="Price $" required>
+   <select name="category">${CATS.map(c=>`<option>${c}</option>`).join('')}</select>
+   <select name="style">${STYLES.map(c=>`<option>${c}</option>`).join('')}</select>
+   <input name="image" placeholder="Image URL (optional)"></div><button>Add product</button></form></div>
+  <div class="panel"><strong>Add dupe to a product</strong><form id="addd"><div class="row">
+   <select name="pid">${DB.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</select>
+   <input name="name" placeholder="Dupe name" required><input name="retailer" placeholder="Retailer" required>
+   <input name="price" type="number" min="1" placeholder="Price $" required>
+   <input name="image" placeholder="Image URL (optional)">
+   <input name="url" placeholder="Normal retailer URL"><input name="aff" placeholder="Affiliate URL (optional)"></div><button>Add dupe</button></form></div>
+  <div class="panel"><strong>Backup</strong><p><button id="exp" class="sec">Export (copy JSON)</button> <button id="clr" class="danger">Reset to sample data</button></p>
+   <textarea id="imp" rows="3" placeholder="Paste exported JSON here to import"></textarea><button id="impb" style="margin-top:6px">Import</button></div>
+  <h2>Products</h2>`;
+  for(const p of DB){
+    h+=`<div class="panel"><div style="display:flex;justify-content:space-between;gap:8px"><strong>${esc(p.name)} · ${money(p.price)}</strong><button class="danger" data-delp="${esc(p.id)}">Delete</button></div>`;
+    p.dupes.forEach((d,i)=>{h+=`<div class="row" style="align-items:center"><span>${esc(d.name)} (${money(d.price)})</span>
+      <input data-u="${esc(p.id)}|${i}" value="${esc(d.url)}" placeholder="Retailer URL"><input data-a="${esc(p.id)}|${i}" value="${esc(d.aff)}" placeholder="Affiliate URL">
+      <button class="sec" data-sv="${esc(p.id)}|${i}">Save links</button><button class="danger" data-deld="${esc(p.id)}|${i}">✕</button></div>`});
+    h+='</div>';
+  }
+  h+=`<h2>Dupe requests (${REQ.length})</h2><div class="panel">${REQ.length?REQ.map(r=>`<div>${esc(r.item)} <span class="mut">${esc(r.email||'')}</span></div>`).join(''):'<span class="mut">None yet.</span>'}</div>`;
+  $('#app').innerHTML=h;
+  const num=v=>Math.max(1,parseFloat(v)||1);
+  $('#addp').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);DB.push({id:'p'+Date.now(),name:f.get('name'),brand:f.get('brand'),price:num(f.get('price')),category:f.get('category'),style:f.get('style'),image:f.get('image'),dupes:[]});
+    if(DB.every(p=>p.sample))DB=DB;persist();renderAdmin()};
+  $('#addd').onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);const p=DB.find(x=>x.id===f.get('pid'));if(!p)return;
+    p.dupes.push({name:f.get('name'),retailer:f.get('retailer'),price:num(f.get('price')),image:f.get('image'),url:f.get('url'),aff:f.get('aff')});persist();renderAdmin()};
+  $('#exp').onclick=()=>{const t=$('#imp');t.value=JSON.stringify(DB,null,2);t.select();try{navigator.clipboard.writeText(t.value).then(()=>{$('#exp').textContent='Copied ✓'},()=>{})}catch(e){}};
+  $('#clr').onclick=e=>twice(e.target,()=>{DB=JSON.parse(JSON.stringify(SAMPLE));FAV=[];persist();renderAdmin()});
+  $('#impb').onclick=()=>{try{const v=JSON.parse($('#imp').value);if(!Array.isArray(v))throw 0;DB=v;persist();renderAdmin()}catch(e){$('#impb').textContent='Invalid JSON'}};
+  document.querySelectorAll('[data-delp]').forEach(b=>b.onclick=()=>twice(b,()=>{DB=DB.filter(p=>p.id!==b.dataset.delp);persist();renderAdmin()}));
+  document.querySelectorAll('[data-deld]').forEach(b=>b.onclick=()=>{const[pid,i]=b.dataset.deld.split('|');DB.find(p=>p.id===pid).dupes.splice(+i,1);persist();renderAdmin()});
+  document.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>{const k=b.dataset.sv;const[pid,i]=k.split('|');const d=DB.find(p=>p.id===pid).dupes[+i];
+    d.url=document.querySelector(`[data-u="${k}"]`).value.trim();d.aff=document.querySelector(`[data-a="${k}"]`).value.trim();persist();b.textContent='Saved ✓'});
+}
+
+/* ---------- router ---------- */
+function route(){
+  const r=location.hash.replace('#','')||'/';
+  if(r==='/favorites')renderFav();
+  else if(r==='/how')renderPage('How it works','<p>1. Search for an expensive furniture or decor piece.</p><p>2. Compare look-alike alternatives with the price and savings shown.</p><p>3. Click “Shop this dupe” to buy at the retailer. We never sell products ourselves.</p>');
+  else if(r==='/privacy')renderPage('Privacy','<p>This site stores your favorites and settings only in your own browser (localStorage). We do not collect personal data unless you submit a request form. Third-party services such as advertising (e.g. Google AdSense) or affiliate networks may use cookies when enabled.</p>');
+  else if(r==='/disclosure')renderPage('Affiliate disclosure','<p>Some links on DupeNest are affiliate links. If you buy through them, we may earn a commission at no extra cost to you. Prices and availability are set by retailers and may change.</p>');
+  else if(r==='/admin')renderAdmin();
+  else renderHome();
+  window.scrollTo(0,0);
+}
+document.addEventListener('click',e=>{
+  const c=e.target.closest('[data-cat]');if(c){S.cat=c.dataset.cat;renderHome();return}
+  const f=e.target.closest('[data-fav]');if(f){const id=f.dataset.fav;FAV=FAV.includes(id)?FAV.filter(x=>x!==id):[...FAV,id];persist();f.textContent=FAV.includes(id)?'♥':'♡';if(location.hash==='#/favorites')renderFav()}
+});
+window.addEventListener('hashchange',route);
+persist();route();
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"DupeNest","description":"Furniture and decor dupe finder"}</script>
+
+
+</body>
+</html>
